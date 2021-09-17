@@ -1,16 +1,20 @@
 from django.contrib import messages
 from django.contrib.auth.models import User
-from receitas import models
 from django.shortcuts import get_object_or_404, redirect, render
 from receitas.models import Receita
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 # Create your views here.
 
 def index(request):
 
     receitas = Receita.objects.order_by('data_receita').filter(publicado=True)
-
+    paginator = Paginator(receitas, 6)
+    page = request.GET.get('page')
+    receitas_por_pagina = paginator.get_page(page)
+    
     dados = {
-        'receitas' : receitas
+        'receitas' : receitas_por_pagina
     }
 
     return render(request,'receitas/index.html', dados)
